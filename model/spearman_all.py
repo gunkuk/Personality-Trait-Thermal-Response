@@ -22,11 +22,11 @@ from utils import (
 # =========================
 @dataclass(frozen=True)
 class Config:
-    path_bi: str = r"C:\Users\rjs11\Desktop\1\paper\00_SCI\MBTI\BI+SUR.xlsx"
-    path_phy: str = r"C:\Users\rjs11\Desktop\1\paper\00_SCI\MBTI\PHY.xlsx"
+    path_bi: str = r"C:\Users\rjs11\Desktop\1\paper\00_SCI\MBTI\data\BI+SUR.xlsx"
+    path_phy: str = r"C:\Users\rjs11\Desktop\1\paper\00_SCI\MBTI\data\PHY.xlsx"
 
-    out_dir: str = r"C:\Users\rjs11\Desktop\1\paper\00_SCI\MBTI\model\spearman\OUT"
-    out_name: str = "spearman_BI_SUR_plus_PHY.xlsx"
+    out_dir: str = r"C:\Users\rjs11\Desktop\1\paper\00_SCI\MBTI\model\OUT"
+    out_name: str = "spearman_all_x.xlsx"
 
     id_col: str = "연번"
     env_col: str = "환경"
