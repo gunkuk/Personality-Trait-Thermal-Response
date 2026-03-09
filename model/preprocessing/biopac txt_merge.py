@@ -7,6 +7,18 @@
 ## 주의사항
 # 선택된 두 파일을 [0,600) SEC로 CROP하므로, ACQKNOWLEGE에서 미리 선택할 파일이 적합한 구간 (600초 조금 넘게) 으로 잘라놔야 함. 
 
+#m1: "preprocessing_front_half.py"
+#[0, 600) s 까지 컷
+
+#m2: "preprocessing_back_half.py"
+#[0, 600) s 까지 컷
+#이후 600s추가해서
+#[600, 1200) s 로 output
+
+#m3: "preprocessing_merge.py"
+#m1이랑 m2 output을 합쳐줌
+#XXX_front.txt
+#xxx_back.txt
 
 
 
