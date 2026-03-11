@@ -1,0 +1,56 @@
+{
+  "mode": "scenario_dynamic",
+  "feature_set": "F0",
+  "n_samples": 512,
+  "n_features_raw": 179,
+  "n_features_used": 20,
+  "gmm_k": 8,
+  "gmm_cov": "diag",
+  "silhouette": -0.12416392357231626,
+  "calinski_harabasz": 85325.08929524914,
+  "davies_bouldin": 3.8786767650809884,
+  "bic": 49475.579564315456,
+  "aic": 48089.64741192754,
+  "cluster_sizes": {
+    "0": 77,
+    "1": 1,
+    "2": 1,
+    "3": 3,
+    "4": 101,
+    "5": 3,
+    "6": 191,
+    "7": 135
+  },
+  "stability": {
+    "ari_mean": 0.7493369075721884,
+    "ari_std": 0.2290465369806098,
+    "ari_min": 0.34119910310253804,
+    "ari_max": 1.0,
+    "pairs": 190
+  },
+  "config": {
+    "phy_path": "C:\\Users\\rjs11\\Desktop\\1\\paper\\00_SCI\\MBTI\\model\\OUT\\PHY_processed.xlsx",
+    "bi_path": "C:\\Users\\rjs11\\Desktop\\1\\paper\\00_SCI\\MBTI\\data\\BI+SUR.xlsx",
+    "out_dir": "C:\\Users\\rjs11\\Desktop\\1\\paper\\00_SCI\\MBTI\\model\\OUT\\CLS\\F0\\scenario_dynamic",
+    "mode": "scenario_dynamic",
+    "feature_set": "F0",
+    "seed": 42,
+    "impute_strategy": "median",
+    "use_pca": true,
+    "pca_n_components": 20,
+    "k_min": 2,
+    "k_max": 8,
+    "covariance_types": [
+      "diag",
+      "tied",
+      "full"
+    ],
+    "reg_covar": 1e-06,
+    "n_init": 10,
+    "max_iter": 1000,
+    "hdb_min_cluster_size": 10,
+    "hdb_min_samples": null,
+    "stability_runs": 20,
+    "top_profile_features": 25
+  }
+}
