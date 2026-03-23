@@ -1,0 +1,48 @@
+﻿[TOTAL SUMMARY SHORT REPORT]
+
+1) Best overall solution
+- kmeans | k=2 | sil=0.1910, CH=26.76, DB=1.9958, seed_ARI=1.0000, subsample_ARI=0.8283
+- cluster_sizes: C0:45, C1:83
+
+2) Top candidates
+- Usable candidates
+  - #1: kmeans | k=2 | sil=0.1910, subsample_ARI=0.8283, min_size=45, sizes=C0:45, C1:83
+  - #2: gmm | k=2, covariance_type=diag | sil=0.2258, subsample_ARI=0.7794, min_size=21, sizes=C0:107, C1:21
+- Not recommended candidates
+  - #1: kmeans | k=3 | sil=0.1809, subsample_ARI=0.7424, min_size=3, sizes=C0:46, C1:79, C2:3 | reason=min_cluster_size<10
+  - #2: ward | k=3 | sil=0.1896, subsample_ARI=0.4110, min_size=3, sizes=C0:102, C1:23, C2:3 | reason=min_cluster_size<10, low_subsample_stability
+  - #3: ward | k=2 | sil=0.2249, subsample_ARI=0.3652, min_size=26, sizes=C0:26, C1:102 | reason=low_subsample_stability
+  - #4: kmeans | k=5 | sil=0.1250, subsample_ARI=0.5061, min_size=3, sizes=C0:33, C1:3, C2:29, C3:40, C4:23 | reason=min_cluster_size<10, low_subsample_stability
+  - #5: kmeans | k=4 | sil=0.1447, subsample_ARI=0.4793, min_size=3, sizes=C0:35, C1:34, C2:3, C3:56 | reason=min_cluster_size<10, low_subsample_stability
+  - #6: kmeans | k=6 | sil=0.1176, subsample_ARI=0.4842, min_size=3, sizes=C0:38, C1:16, C2:29, C3:19, C4:23, C5:3 | reason=min_cluster_size<10, low_subsample_stability
+  - #7: ward | k=6 | sil=0.1134, subsample_ARI=0.4072, min_size=3, sizes=C0:31, C1:40, C2:15, C3:23, C4:16, C5:3 | reason=min_cluster_size<10, low_subsample_stability
+  - #8: gmm | k=3, covariance_type=spherical | sil=0.1773, subsample_ARI=0.5217, min_size=3, sizes=C0:51, C1:74, C2:3 | reason=min_cluster_size<10, low_subsample_stability
+
+3) Block diagnostics
+- Within-block correlation (max abs corr)
+  - PHY: n=4, mean_abs_corr=0.068, max_abs_corr=0.238
+  - PSY: n=2, mean_abs_corr=0.438, max_abs_corr=0.438
+  - BHR: n=2, mean_abs_corr=0.308, max_abs_corr=0.308
+  - TLX: n=1, mean_abs_corr=nan, max_abs_corr=nan
+  - EUP: n=2, mean_abs_corr=0.082, max_abs_corr=0.082
+- Block PCA (PC1 explained variance)
+  - PHY: n=4, PC1=0.315, PC2=0.255
+  - PSY: n=2, PC1=0.719, PC2=0.281
+  - BHR: n=2, PC1=0.654, PC2=0.346
+  - TLX: n=1, PC1=1.000, PC2=nan
+  - EUP: n=2, PC1=0.541, PC2=0.459
+- Block energy (mean L2 norm)
+  - PHY: n=4, mean_L2=0.871, sd_L2=0.491
+  - PSY: n=2, mean_L2=0.888, sd_L2=0.459
+  - BHR: n=2, mean_L2=0.678, sd_L2=0.735
+  - TLX: n=1, mean_L2=0.764, sd_L2=0.646
+  - EUP: n=2, mean_L2=0.871, sd_L2=0.491
+
+4) Tiny clusters (<= 6 members)
+- ward | k=3 | cluster=2 | n=3 | members=[74, 85, 97]
+
+5) Interpretation caution
+- best solution은 internal metric + stability 기준의 상대적 최적해일 뿐, 절대적 유형 진실을 뜻하지 않음
+- block imbalance / feature redundancy가 남아 있을 수 있으므로 diagnostics를 함께 해석할 것
+- min_cluster_size가 매우 작은 해는 outlier-absorbing cluster일 가능성이 높아 해석에 주의
+- 최종 논문용 결론 전에는 external validation 또는 후속 가설검정이 필요

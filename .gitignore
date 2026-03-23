@@ -1,2 +1,13 @@
 REF/
 피험자모집/
+
+# Large BIOPAC raw output files (>100MB, exceed GitHub limit)
+**/preprocessing/out/*.txt
+**/preprocessing/out/merged/*.txt
+
+# Claude internal files
+.claude/
+
+# Python cache
+__pycache__/
+*.pyc

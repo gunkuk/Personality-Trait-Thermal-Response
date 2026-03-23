@@ -1,0 +1,67 @@
+"""코딩 지시문 템플릿 (GPT 코드 생성용, 2026-03-18 업데이트)
+
+아래의 데이터(단일 엑셀 파일)를 기준으로, pandas 기반의 전처리 + feature extraction + subject-level input matrix 생성 코드를 작성하라.
+최종 목적은 **subject-level clustering(K-means, Ward, GMM)** 을 통해 개인차(성격/행동 특성)를 드러내는 것이다.
+
+[입력 파일]
+- rawdata_wrong corrected.xlsx 
+- 혹은 주어진 다른 엑셀 파일
+
+[최종 목표]
+1. input file의 데이터를 minute level혹은 env(trial)-level에서 subject-level 메타 feature로로 축약한다.
+2. 개인차(subject trait)가 드러나는 방향으로 불필요한 feature를 제거한다.
+4. clustering 직전의 개인별 변수 10~15개 사이의 numeric input matrix X를 생성한다.
+
+[최종 산출물 형태]
+10~15개의 feature는 다음과 같다.
+- TCV, TSV, TP 등의 reactivity에 관한 feature [20min-10min]
+- 행동 설문의 reactivity에 관한 feature [동적 구간 평균-정적구간 평균]
+- EUP 주성분 2개
+- 생리지표의 reactivity에 관한 feature 지표별 1개, 총 4개
+- BMI, SEX
+- 그 외에 목표에 맞는 추가 feature들
+
+[기본 원칙]
+- input data에 대한 정보는 같은 소스 파일은 "data overview.txt"에 설명되어 있음
+- 원본 파일은 수정하지 말 것
+- 시트별 로드/전처리/피처추출 함수를 분리할 것
+- 재사용 가능한 함수형 구조로 작성할 것
+- 주석 충분히 작성할 것
+- 제거 사유 기록을 포함할 것.
+- 처리 단계별 산출물을 명확히 저장(중간 DF/최종 DF)
+  - (A) trial-level physiology features(AB/CD/EF/GH, 분당 20개 → 요약 피처)
+  - (B) SUR 기반 trial-level(AB/CD/EF/GH, static/dynamic) 요약 피처
+  - (C) subject-level input matrix (최종 clustering 입력)
+
+[헤더 표준화]
+- no., ID, subject, 연번 → id
+- name, 이름 → name
+- env/환경:
+  - ST/EDA/ECG/PPG의 env는 condition(AB/CD/EF/GH)로 rename: condition
+  - SUR/COG/TLX의 env는 세부 구간이므로 segment(A~H)로 rename: segment
+- time (min), 시간 → min
+- 나머지는 snake_case를 권장하되, 원본 컬럼명도 추적 가능하게 매핑 테이블을 유지할 것
+
+
+[핵심: feature extraction 설계 목표]
+- raw feature(분당 1~20, 변수 다수)를 **정보 손실을 최소화하면서** 축약하여 차원을 줄일 것
+- 환경(env/condition)이 개인차를 압도하지 않도록, 최종 입력은 반드시 **subject-level** 이 되도록 구성할 것
+- 환경을 subject로 축약하는 메타 피처를 적극 생성할 것(가장 중요)
+
+[데이터 정제(data cleaning) 원칙]
+- 중복/비정상 컬럼 제거:
+  - COG의 .1 중복 블록은 명시적으로 구분(rename) 후 사용 여부를 선택 가능하게
+  - 의미 없는 상수/near-zero variance 컬럼 제거
+- 결측 처리:
+  - 일반 결측은 통계적 대체(예: median) 옵션 제공
+  - 구조적 결측(P9, M9, SP3, SP5)은
+    - indicator 컬럼(예: p9_is_applicable, sp5_is_applicable)을 추가하고
+    - 원변수의 NaN은 별도 코드(예: -999)로 치환하거나, 두 컬럼(값/적용여부) 형태를 유지하는 옵션을 제공
+- 스케일링 전 이상치 점검:
+  - 극단치 제거/완화 옵션(예: winsorize, robust z-score clip)
+- 중복/과다 상관 피처 제거:
+  - 절대상관 |r|>0.98 같은 기준으로 redundancy pruning 옵션 제공
+- 최종 표준화:
+  - clustering 입력은 StandardScaler(z-score) 기본
+  - 필요 시 RobustScaler 옵션 제공
+

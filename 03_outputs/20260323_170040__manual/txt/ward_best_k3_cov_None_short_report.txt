@@ -1,0 +1,34 @@
+﻿[1. SHORT REPORT RESULT]
+- Selected solution: WARD | k=3
+- Cluster validity: silhouette=0.1896, CH=21.64, DB=1.4472
+- Stability: seed_ARI=1.0000, subsample_ARI=0.4110
+- Cluster sizes: C0:102, C1:23, C2:3
+
+- Cluster profile summary
+  - Cluster 0: relatively high in (p7_minus_m7_overall_mean, eup16, hr_dtst_env_sd) / relatively low in (m2_20minus10_env_sd, tsv_20minus10_env_sd, tlx1_dtst_env_sd)
+  - Cluster 1: relatively high in (tlx1_dtst_env_sd, tsv_20minus10_env_sd, m2_20minus10_env_sd) / relatively low in (eup5, hr_dtst_env_sd, eup16)
+  - Cluster 2: relatively high in (tlx1_dtst_env_sd, p7_minus_m7_env_sd, tsv_20minus10_env_sd) / relatively low in (hr_dtst_env_sd, skt_dtst_env_sd, p7_minus_m7_overall_mean)
+
+- Feature discriminability (top 5, * = p<.05)
+  * [1] p7_minus_m7_overall_mean: F=3479.74, eta²=0.982 (large), p=0.0000
+  * [2] tlx1_dtst_env_sd: F=63.32, eta²=0.503 (large), p=0.0000
+  * [3] tsv_20minus10_env_sd: F=13.69, eta²=0.180 (large), p=0.0000
+  * [4] m2_20minus10_env_sd: F=9.47, eta²=0.132 (medium), p=0.0001
+  * [5] eup16: F=7.00, eta²=0.101 (medium), p=0.0013
+
+[2. METRIC DESCRIPTION]
+- Silhouette: 군집 내 응집도와 군집 간 분리도를 함께 보는 지표이며, 클수록 좋다.
+- Calinski-Harabasz (CH): 군집 간 분산 / 군집 내 분산 비율. 클수록 좋다.
+- Davies-Bouldin (DB): 군집 간 분리 대비 군집 내 퍼짐. 작을수록 좋다.
+- BIC / AIC: GMM 모형 적합도+복잡도 기준. 작을수록 유리하다.
+- Seed ARI: random seed 변화에 대한 안정성. 클수록 좋다.
+- Subsample ARI: 샘플 일부 변경에 대한 구조 유지성. 클수록 좋다.
+- F-statistic: 군집 간 분산/군집 내 분산 비율. 클수록 해당 feature가 군집을 잘 구분함.
+- eta² (효과크기): 0.01=small, 0.06=medium, 0.14 이상=large.
+
+[3. METHODOLOGY DESCRIPTION]
+- Input matrix는 subject-level standardized feature matrix를 사용하였다.
+- K-means와 Ward는 k=2~6 범위에서 비교하였다.
+- GMM은 k=2~6 및 covariance_type(spherical, diag, tied, full)을 함께 탐색하였다.
+- Feature 설명력은 one-way ANOVA F-통계량 및 eta-squared로 계산하였다.
+- 최종 해는 내부지표, 안정성, tiny cluster 여부를 함께 고려하여 선정하였다.

@@ -1,0 +1,89 @@
+﻿[1. TOP SUMMARY RESULT]
+
+[Rank 1] KMEANS | k=2
+- Validity: silhouette=0.1910, CH=26.76, DB=1.9958
+- Stability: seed_ARI=1.0000, subsample_ARI=0.8283
+- Cluster sizes: C0:45, C1:83 (min=45)
+- Overall score: 27.00
+- Practical judgment: USABLE
+
+[Rank 2] KMEANS | k=3
+- Validity: silhouette=0.1809, CH=25.02, DB=1.5992
+- Stability: seed_ARI=0.9575, subsample_ARI=0.7424
+- Cluster sizes: C0:46, C1:79, C2:3 (min=3)
+- Overall score: 29.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 3] WARD | k=3
+- Validity: silhouette=0.1896, CH=21.64, DB=1.4472
+- Stability: seed_ARI=1.0000, subsample_ARI=0.4110
+- Cluster sizes: C0:102, C1:23, C2:3 (min=3)
+- Overall score: 35.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 4] WARD | k=2
+- Validity: silhouette=0.2249, CH=23.10, DB=1.8668
+- Stability: seed_ARI=1.0000, subsample_ARI=0.3652
+- Cluster sizes: C0:26, C1:102 (min=26)
+- Overall score: 42.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 5] KMEANS | k=5
+- Validity: silhouette=0.1250, CH=20.44, DB=1.7859
+- Stability: seed_ARI=0.7613, subsample_ARI=0.5061
+- Cluster sizes: C0:33, C1:3, C2:29, C3:40, C4:23 (min=3)
+- Overall score: 55.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 6] KMEANS | k=4
+- Validity: silhouette=0.1447, CH=22.18, DB=1.8874
+- Stability: seed_ARI=0.7271, subsample_ARI=0.4793
+- Cluster sizes: C0:35, C1:34, C2:3, C3:56 (min=3)
+- Overall score: 55.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 7] KMEANS | k=6
+- Validity: silhouette=0.1176, CH=18.90, DB=1.6914
+- Stability: seed_ARI=0.6476, subsample_ARI=0.4842
+- Cluster sizes: C0:38, C1:16, C2:29, C3:19, C4:23, C5:3 (min=3)
+- Overall score: 61.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 8] WARD | k=6
+- Validity: silhouette=0.1134, CH=17.06, DB=1.8909
+- Stability: seed_ARI=1.0000, subsample_ARI=0.4072
+- Cluster sizes: C0:31, C1:40, C2:15, C3:23, C4:16, C5:3 (min=3)
+- Overall score: 70.00
+- Practical judgment: NOT RECOMMENDED
+
+[Rank 9] GMM | k=2, covariance_type=diag
+- Validity: silhouette=0.2258, CH=16.05, DB=2.1734
+- GMM fit: BIC=2273.96, AIC=2145.62
+- Stability: seed_ARI=0.9808, subsample_ARI=0.7794
+- Cluster sizes: C0:107, C1:21 (min=21)
+- Overall score: 72.00
+- Practical judgment: USABLE
+
+[Rank 10] GMM | k=3, covariance_type=spherical
+- Validity: silhouette=0.1773, CH=24.10, DB=1.6857
+- GMM fit: BIC=2743.09, AIC=2634.71
+- Stability: seed_ARI=0.6999, subsample_ARI=0.5217
+- Cluster sizes: C0:51, C1:74, C2:3 (min=3)
+- Overall score: 72.00
+- Practical judgment: NOT RECOMMENDED
+
+[2. METRIC DESCRIPTION]
+- Silhouette: 군집 간 분리 + 군집 내 응집. 클수록 좋다.
+- CH: between/within variance ratio. 클수록 좋다.
+- DB: 군집 간 거리 대비 퍼짐. 작을수록 좋다.
+- BIC/AIC: GMM 모델 선택 기준. 작을수록 좋다.
+- Seed ARI: 초기값 변화에 대한 안정성.
+- Subsample ARI: 데이터 일부 변경에 대한 구조 유지성.
+
+[3. METHODOLOGY DESCRIPTION]
+- Standardized subject-level input matrix 사용
+- K-means / Ward: k=2~6 탐색
+- GMM: k × covariance_type grid 탐색
+- internal metric + stability 기반 ranking
+- tiny cluster penalty 적용 (min_cluster_size < 10)
+- 최종 순위는 overall_rank_score 기준

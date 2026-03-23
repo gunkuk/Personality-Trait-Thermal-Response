@@ -1,0 +1,124 @@
+overview = """데이터 개요 문서 (GPT 컨텍스트용)
+
+[1. 실험 개요]
+- 기후 챔버 실험 데이터
+- 총 피험자 128명
+- 각 피험자는 4회 trial 수행
+- 각 trial은 20분 세트 1회:
+- 정적 10분
+- 동적 10분
+- 세트 사이 휴식시간 존재
+- 수집 데이터:
+1) 생체신호: ECG, EDA, PPG, ST(Skin Temperature)
+2) 실험 중 설문
+3) 인적사항 및 성격정보
+4) 에너지 사용 동기/습관 사후설문
+
+[2. condition 의미]
+20분 세트 단위 condition:
+- AB = 23도 정적 + 23→18도 동적
+- CD = 18도 정적 + 18→23도 동적
+- EF = 23도 정적 + 23→28도 동적
+- GH = 28도 정적 + 28→23도 동적
+
+세부 구간 코드:
+- A, B, C, D, E, F, G, H 는 각 20분 세트 내부의 부분 구간
+- 예: A는 AB 세트의 초반 구간
+
+[3. 시간 변수 의미]
+설문 시간은 각 20분 trial 내부 상대시간이다.
+- 0분: 시작 직후
+- 5분
+- 10분: 정적 종료 / 동적 시작
+- 15분
+- 20분: 동적 종료 직전
+
+[4. 시트 구성]
+1) BI (subject-level: 1행=피험자 1명)
+- 주요 컬럼(예시): no./ID, name, sex, weight, BMI, age
+- MBTI 5축 점수: E, N, T, J, A
+- FFM(OCEAN) 점수: o1, c1, e1, a1, n1
+- 기타: scenerio(원본 표기 그대로 유지, 필요시 scenario로 rename 옵션)
+
+2) SUR (timepoint-level: 1행=피험자 1명 × env(구간) 1개 × 설문시점 1개)
+- 식별 컬럼: ID, name, env, time (min)
+- env는 A~H(세부 구간 코드)이며, 아래 규칙으로 condition(20분 세트)을 유도할 수 있다.
+  - A/B → AB, C/D → CD, E/F → EF, G/H → GH
+- 핵심 설문 변수: TSV(-3~3), TCV(-3~3), TA(0~3), TP(-2~2), PT(15~31)
+- 행동/조절 문항: P1~P9, M1~M9
+- 특수 결측(구조적 결측): P9, M9  (단순 NaN 삭제 금지; indicator로 보존 옵션)
+
+3) EUP (post-survey: subject-level에 가까움)
+- EUP1~EUP18, SP1~SP5 포함
+- 특수 결측(구조적 결측): SP3, SP5  (단순 NaN 삭제 금지; indicator로 보존 옵션)
+
+4) COG (인지 과제 요약: env는 A~H)
+- 동일 행에 두 과제 블록이 들어가 있어 일부 컬럼이 .1 suffix로 중복될 수 있음(예: accuracy (%), accuracy (%).1)
+- 전처리 시 과제 블록을 명확히 구분해 rename(예: stroop_accuracy, go_nogo_accuracy 등)할 수 있게 설계
+
+5) TLX (NASA-TLX 등: env는 A~H)
+- TLX1~TLX6, S1, S2 등
+
+6) ST / EDA / ECG / PPG (생체신호 feature: trial-level, 1행=피험자 1명 × condition 1개(AB/CD/EF/GH))
+- 공통 식별 컬럼: no., name, env(=AB/CD/EF/GH)
+- 분당(minute) feature들: *_1 ~ *_20 형태로 제공
+  - ST: st_mean_1~20, at_mean_1~20(ambient temp)
+  - EDA: tonic_1~20, phasic_1~20 + (이미 존재하는 1to10/11to20 요약 컬럼 다수)
+  - ECG: HR/MeanRR/SDNN/RMSSD/LF/HF/LF_HF 각 1~20
+  - PPG: pulse_amplitude_mean/std, blood_flow_mean/std, signal_max/min, peak_count 각 1~20 + global_heart_rate, global_pulse_amplitude, global_blood_flow
+- 초반: 분석에서 제외(무시)
+
+
+[7. MBTI / FFM 규칙]
+MBTI:
+- e, n, t, j, a 는 MBTI 5축 점수
+- a는 Assertive/Turbulent 축 점수
+- 51점 이상이면 앞 문자 성향
+- 49점 이하이면 반대 성향
+- 예: 모두 51 이상이면 ENTJ-A
+
+FFM:
+- OCEAN 점수
+- MBTI와 이름이 겹치므로 뒤에 1을 붙임
+- o1, c1, e1, a1, n1
+
+[8. 설문 변수 의미]
+기본 설문:
+- TSV = 응답온열감, 범위 -3~3
+- TCV = 응답온열쾌적감, 범위 -3~3
+- TA = 응답온열수용도, 범위 0~3
+- TP = 온열환경선호도, 범위 -2~2
+- PT = 현재 몇 도로 느끼는지에 대한 지각온도(15~31 선택)
+
+행동 문항:
+- P1~P9 = 개인 사무실 가정 행동/환경조절/희망온도 관련 문항
+- M1~M9 = 공동 사무실 가정 행동/환경조절/희망온도 관련 문항
+
+사후설문:
+- EUP1~EUP18 = 전자기기 및 냉난방기 사용/차단 관련 동기 문항
+- SP1~SP5 = 설정온도 습관 관련 문항
+
+[9. 특수 결측 규칙]
+다음 변수의 N/A는 일반 missing이 아니다.
+- P9, M9, SP3, SP5
+
+해석:
+- 값이 비어 있는 것이 아니라 해당 습관/희망온도 자체가 없음
+- 즉 structural missing / not applicable 로 처리해야 함
+
+쌍으로 해석:
+- P9는 P8과 함께
+- M9는 M8과 함께
+- SP3는 SP2와 함께
+- SP5는 SP4와 함께
+
+[10. 병합 시 주의]
+PHY:
+- 1행 = trial 1회
+
+PI+SUR:
+- 1행 = trial 1회 × 설문시점 1개
+
+따라서 병합 방식은 목적에 따라 다르다.
+- trial-level 병합: 설문을 trial 단위로 요약 후 PHY와 결합
+- timepoint-level 병합: 생체신호를 설문 시점(0,5,10,15,20)에 맞춰 정렬/집계 후 결합

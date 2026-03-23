@@ -1,0 +1,214 @@
+[BLOCK] SUR_TSV_TCV_TA_TP
+- native unit: SUR_ID_ENV_MEAN
+- n=1022, p=4
+- usable columns: TSV, TCV, TA, TP
+- exploratory PCA valid? YES
+- KMO=0.614
+- Bartlett p=0
+- avg |r|=0.464
+- cumulative variance: PC1=0.608, PC2=0.870
+- n_components for 80/90/95% = 2/3/3
+- reducible to <=2 PCs? 80%=YES, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: TSV (R²=0.583)
+- detail: TSV가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.583; PC1 loading=0.878, PC2 loading=-0.387
+- cautions:
+  * SUR는 원래 time-level 반복측정이므로, 시간행을 그대로 쓰면 독립성 위반/N inflation 위험이 커서 ID-env 평균으로 축약함.
+====================================================================================================
+[BLOCK] SUR_P_M
+- native unit: SUR_ID_ENV_MEAN
+- n=1022, p=14
+- usable columns: P1, P2, P3, P4, P5, P6, P7, M1, M2, M3, M4, M5, M6, M7
+- exploratory PCA valid? YES
+- KMO=0.847
+- Bartlett p=0
+- avg |r|=0.552
+- cumulative variance: PC1=0.601, PC2=0.701
+- n_components for 80/90/95% = 4/6/8
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: M2 (R²=0.689)
+- detail: M2가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.689; PC1 loading=0.894, PC2 loading=-0.191
+- cautions:
+  * SUR는 원래 time-level 반복측정이므로, 시간행을 그대로 쓰면 독립성 위반/N inflation 위험이 커서 ID-env 평균으로 축약함.
+====================================================================================================
+[BLOCK] SUR_P_minus_M
+- native unit: SUR_ID_ENV_MEAN
+- n=1022, p=7
+- usable columns: P1-M1, P2-M2, P3-M3, P4-M4, P5-M5, P6-M6, P7-M7
+- exploratory PCA valid? YES
+- KMO=0.525
+- Bartlett p=2.339e-151
+- avg |r|=0.151
+- cumulative variance: PC1=0.249, PC2=0.465
+- n_components for 80/90/95% = 5/6/7
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: P7-M7 (R²=0.339)
+- detail: P7-M7가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.339; PC1 loading=-0.130, PC2 loading=0.844
+- cautions:
+  * SUR는 원래 time-level 반복측정이므로, 시간행을 그대로 쓰면 독립성 위반/N inflation 위험이 커서 ID-env 평균으로 축약함.
+  * KMO=0.525 < 0.60: 공통요인/축약 적합도가 낮음.
+  * 평균 |r|=0.151 < 0.20: 블록 내부 상관이 약함.
+====================================================================================================
+[BLOCK] EUP_ONLY
+- native unit: PERSON
+- n=519, p=18
+- usable columns: EUP1, EUP2, EUP3, EUP4, EUP5, EUP6, EUP7, EUP8, EUP9, EUP10, EUP11, EUP12, EUP13, EUP14, EUP15, EUP16, EUP17, EUP18
+- exploratory PCA valid? CAUTION/NO
+- KMO=NA
+- Bartlett p=NA
+- avg |r|=NA
+- cumulative variance: PC1=0.270, PC2=0.461
+- n_components for 80/90/95% = 9/13/15
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: EUP2 (R²=0.345)
+- detail: EUP2가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.345; PC1 loading=0.684, PC2 loading=-0.416
+- cautions:
+  * 모든 문항이 Likert/ordinal일 가능성이 높아, 엄밀하게는 polychoric 기반 차원축소가 더 적절할 수 있음.
+  * 변수 수가 2개 이하인 블록은 PCA보다는 상관/단일축 비교에 가까움.
+====================================================================================================
+[BLOCK] EUP_SP_ONLY
+- native unit: PERSON
+- n=519, p=4
+- usable columns: SP1, SP2, SP3, SP4
+- exploratory PCA valid? CAUTION/NO
+- KMO=NA
+- Bartlett p=NA
+- avg |r|=NA
+- cumulative variance: PC1=0.436, PC2=0.691
+- n_components for 80/90/95% = 3/3/4
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: SP1 (R²=0.554)
+- detail: SP1가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.554; PC1 loading=0.938, PC2 loading=-0.023
+- cautions:
+  * 모든 문항이 Likert/ordinal일 가능성이 높아, 엄밀하게는 polychoric 기반 차원축소가 더 적절할 수 있음.
+  * 변수 수가 2개 이하인 블록은 PCA보다는 상관/단일축 비교에 가까움.
+====================================================================================================
+[BLOCK] BI_SEX_BMI_AGE
+- native unit: PERSON
+- n=128, p=3
+- usable columns: SEX, BMI, AGE
+- exploratory PCA valid? YES
+- KMO=0.567
+- Bartlett p=8.115e-11
+- avg |r|=0.327
+- cumulative variance: PC1=0.560, PC2=0.844
+- n_components for 80/90/95% = 2/3/3
+- reducible to <=2 PCs? 80%=YES, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: BMI (R²=0.485)
+- detail: BMI가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.485; PC1 loading=0.844, PC2 loading=-0.221
+- cautions:
+  * 이 블록에는 이진형/준이진형 변수가 1개 포함되어 Pearson PCA 해석이 불안정할 수 있음.
+  * KMO=0.567 < 0.60: 공통요인/축약 적합도가 낮음.
+====================================================================================================
+[BLOCK] BI_SEX_BMI
+- native unit: PERSON
+- n=128, p=2
+- usable columns: SEX, BMI
+- exploratory PCA valid? YES
+- KMO=0.500
+- Bartlett p=1.5e-10
+- avg |r|=0.528
+- cumulative variance: PC1=0.764, PC2=1.000
+- n_components for 80/90/95% = 2/2/2
+- reducible to <=2 PCs? 80%=YES, 90%=YES
+- one raw variable can represent retained structure? NO
+- best raw proxy: SEX (R²=0.639)
+- detail: SEX가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.639; PC1 loading=0.878, PC2 loading=-0.488
+- cautions:
+  * 이 블록에는 이진형/준이진형 변수가 1개 포함되어 Pearson PCA 해석이 불안정할 수 있음.
+  * 변수 수가 2개 이하인 블록은 PCA보다는 상관/단일축 비교에 가까움.
+  * KMO=0.500 < 0.60: 공통요인/축약 적합도가 낮음.
+====================================================================================================
+[BLOCK] TLX_only
+- native unit: ID_ENV
+- n=1024, p=6
+- usable columns: TLX1, TLX2, TLX3, TLX4, TLX5, TLX6
+- exploratory PCA valid? YES
+- KMO=0.785
+- Bartlett p=0
+- avg |r|=0.375
+- cumulative variance: PC1=0.492, PC2=0.682
+- n_components for 80/90/95% = 4/5/6
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: TLX1 (R²=0.504)
+- detail: TLX1가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.504; PC1 loading=0.816, PC2 loading=0.298
+- cautions:
+  * 모든 문항이 Likert/ordinal일 가능성이 높아, 엄밀하게는 polychoric 기반 차원축소가 더 적절할 수 있음.
+====================================================================================================
+[BLOCK] TLX_S
+- native unit: ID_ENV
+- n=1024, p=8
+- usable columns: TLX1, TLX2, TLX3, TLX4, TLX5, TLX6, S1, S2
+- exploratory PCA valid? YES
+- KMO=0.744
+- Bartlett p=8.657e-246
+- avg |r|=0.275
+- cumulative variance: PC1=0.377, PC2=0.546
+- n_components for 80/90/95% = 5/6/7
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: TLX1 (R²=0.454)
+- detail: TLX1가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.454; PC1 loading=0.809, PC2 loading=-0.086
+- cautions:
+  * 모든 문항이 Likert/ordinal일 가능성이 높아, 엄밀하게는 polychoric 기반 차원축소가 더 적절할 수 있음.
+====================================================================================================
+[BLOCK] BI_MBTI
+- native unit: PERSON
+- n=128, p=5
+- usable columns: E, N, T, J, A
+- exploratory PCA valid? CAUTION/NO
+- KMO=0.427
+- Bartlett p=0.02089
+- avg |r|=0.102
+- cumulative variance: PC1=0.268, PC2=0.498
+- n_components for 80/90/95% = 4/5/5
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: A (R²=0.357)
+- detail: A가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.357; PC1 loading=0.733, PC2 loading=-0.393
+- cautions:
+  * KMO=0.427 < 0.60: 공통요인/축약 적합도가 낮음.
+  * 평균 |r|=0.102 < 0.20: 블록 내부 상관이 약함.
+====================================================================================================
+[BLOCK] BI_FFM
+- native unit: PERSON
+- n=128, p=5
+- usable columns: o1, c1, e1, a1, n1
+- exploratory PCA valid? YES
+- KMO=0.555
+- Bartlett p=0.0001963
+- avg |r|=0.130
+- cumulative variance: PC1=0.316, PC2=0.524
+- n_components for 80/90/95% = 4/5/5
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: n1 (R²=0.385)
+- detail: n1가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.385; PC1 loading=-0.707, PC2 loading=0.467
+- cautions:
+  * KMO=0.555 < 0.60: 공통요인/축약 적합도가 낮음.
+  * 평균 |r|=0.130 < 0.20: 블록 내부 상관이 약함.
+====================================================================================================
+[BLOCK] BI_MBTI_FFM
+- native unit: PERSON
+- n=128, p=10
+- usable columns: E, N, T, J, A, o1, c1, e1, a1, n1
+- exploratory PCA valid? YES
+- KMO=0.503
+- Bartlett p=1.768e-67
+- avg |r|=0.168
+- cumulative variance: PC1=0.243, PC2=0.430
+- n_components for 80/90/95% = 5/7/8
+- reducible to <=2 PCs? 80%=NO, 90%=NO
+- one raw variable can represent retained structure? NO
+- best raw proxy: n1 (R²=0.365)
+- detail: n1가 retained PCs(2개)를 단일 변수로 설명하는 pseudo-R²=0.365; PC1 loading=0.783, PC2 loading=-0.224
+- cautions:
+  * KMO=0.503 < 0.60: 공통요인/축약 적합도가 낮음.
+  * 평균 |r|=0.168 < 0.20: 블록 내부 상관이 약함.
+====================================================================================================

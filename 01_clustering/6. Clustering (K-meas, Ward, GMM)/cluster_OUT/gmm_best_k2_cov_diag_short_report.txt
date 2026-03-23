@@ -1,0 +1,26 @@
+﻿[1. SHORT REPORT RESULT]
+- Selected solution: GMM | k=2, covariance_type=diag
+- Cluster validity: silhouette=0.2258, CH=16.05, DB=2.1734
+- Model fit (GMM-specific): BIC=2273.96, AIC=2145.62
+- Stability: seed_ARI=0.9808, subsample_ARI=0.7794
+- Cluster sizes: C0:107, C1:21
+
+- Cluster profile summary
+  - Cluster 0: relatively high in (p7_minus_m7_overall_mean, eup16, hr_dtst_env_sd) / relatively low in (tsv_20minus10_env_sd, p7_minus_m7_env_sd, tlx1_dtst_env_sd)
+  - Cluster 1: relatively high in (tlx1_dtst_env_sd, p7_minus_m7_env_sd, tsv_20minus10_env_sd) / relatively low in (hr_dtst_env_sd, eup16, p7_minus_m7_overall_mean)
+
+[2. METRIC DESCRIPTION]
+- Silhouette: 군집 내 응집도와 군집 간 분리도를 함께 보는 지표이며, 클수록 좋다.
+- Calinski-Harabasz (CH): 군집 간 분산이 크고 군집 내 분산이 작을수록 커지는 지표이며, 클수록 좋다.
+- Davies-Bouldin (DB): 군집 간 분리 대비 군집 내 퍼짐 정도를 보는 지표이며, 작을수록 좋다.
+- BIC / AIC: GMM에서 모형 적합도와 복잡도를 함께 고려하는 기준이며, 작을수록 유리하다.
+- Seed ARI: 초기값이나 random seed를 바꿔도 군집 결과가 유지되는지를 보는 안정성 지표이며, 클수록 좋다.
+- Subsample ARI: 일부 샘플만 반복 추출했을 때도 군집 구조가 유지되는지를 보는 안정성 지표이며, 클수록 좋다.
+
+[3. METHODOLOGY DESCRIPTION]
+- Input matrix는 subject-level standardized feature matrix를 사용하였다.
+- K-means와 Ward는 k=2~6 범위에서 비교하였다.
+- GMM은 k=2~6 및 covariance_type(spherical, diag, tied, full)을 함께 탐색하였다.
+- 각 해에 대해 internal validity metric(Silhouette, CH, DB)과 stability(seed ARI, subsample ARI)를 계산하였다.
+- 최종 해는 내부지표, 안정성, 그리고 지나치게 작은 군집 여부를 함께 고려하여 비교하였다.
+- Cluster profile summary는 각 군집의 평균 z-score를 기준으로 상대적으로 높은 변수와 낮은 변수를 정리한 것이다.

@@ -1,0 +1,6 @@
+﻿[KMEANS | k=2]
+silhouette=0.1910, CH=26.76, DB=1.9958
+cluster_sizes: C0:45, C1:83
+
+Cluster 0: high=(tlx1_dtst_env_sd, m2_20minus10_env_sd, tsv_20minus10_env_sd) / low=(hr_dtst_env_sd, eup16, p7_minus_m7_overall_mean)
+Cluster 1: high=(p7_minus_m7_overall_mean, eup16, hr_dtst_env_sd) / low=(tsv_20minus10_env_sd, m2_20minus10_env_sd, tlx1_dtst_env_sd)

@@ -1,0 +1,6 @@
+﻿[WARD | k=2]
+silhouette=0.2249, CH=23.10, DB=1.8668
+cluster_sizes: C0:26, C1:102
+
+Cluster 0: high=(tlx1_dtst_env_sd, tsv_20minus10_env_sd, m2_20minus10_env_sd) / low=(hr_dtst_env_sd, eup16, p7_minus_m7_overall_mean)
+Cluster 1: high=(p7_minus_m7_overall_mean, eup16, hr_dtst_env_sd) / low=(m2_20minus10_env_sd, tsv_20minus10_env_sd, tlx1_dtst_env_sd)

@@ -1,0 +1,34 @@
+﻿[1. SHORT REPORT RESULT]
+- Selected solution: GMM | k=2, covariance_type=diag
+- Cluster validity: silhouette=0.2258, CH=16.05, DB=2.1734
+- Model fit (GMM-specific): BIC=2273.96, AIC=2145.62
+- Stability: seed_ARI=0.9808, subsample_ARI=0.7794
+- Cluster sizes: C0:107, C1:21
+
+- Cluster profile summary
+  - Cluster 0: relatively high in (p7_minus_m7_overall_mean, eup16, hr_dtst_env_sd) / relatively low in (tsv_20minus10_env_sd, p7_minus_m7_env_sd, tlx1_dtst_env_sd)
+  - Cluster 1: relatively high in (tlx1_dtst_env_sd, p7_minus_m7_env_sd, tsv_20minus10_env_sd) / relatively low in (hr_dtst_env_sd, eup16, p7_minus_m7_overall_mean)
+
+- Feature discriminability (top 5, * = p<.05)
+  * [1] p7_minus_m7_env_sd: F=45.93, eta²=0.267 (large), p=0.0000
+  * [2] tlx1_dtst_env_sd: F=41.43, eta²=0.247 (large), p=0.0000
+  * [3] p7_minus_m7_overall_mean: F=19.37, eta²=0.133 (medium), p=0.0000
+  * [4] tsv_20minus10_env_sd: F=19.25, eta²=0.133 (medium), p=0.0000
+  * [5] m2_20minus10_env_sd: F=7.11, eta²=0.053 (small), p=0.0087
+
+[2. METRIC DESCRIPTION]
+- Silhouette: 군집 내 응집도와 군집 간 분리도를 함께 보는 지표이며, 클수록 좋다.
+- Calinski-Harabasz (CH): 군집 간 분산 / 군집 내 분산 비율. 클수록 좋다.
+- Davies-Bouldin (DB): 군집 간 분리 대비 군집 내 퍼짐. 작을수록 좋다.
+- BIC / AIC: GMM 모형 적합도+복잡도 기준. 작을수록 유리하다.
+- Seed ARI: random seed 변화에 대한 안정성. 클수록 좋다.
+- Subsample ARI: 샘플 일부 변경에 대한 구조 유지성. 클수록 좋다.
+- F-statistic: 군집 간 분산/군집 내 분산 비율. 클수록 해당 feature가 군집을 잘 구분함.
+- eta² (효과크기): 0.01=small, 0.06=medium, 0.14 이상=large.
+
+[3. METHODOLOGY DESCRIPTION]
+- Input matrix는 subject-level standardized feature matrix를 사용하였다.
+- K-means와 Ward는 k=2~6 범위에서 비교하였다.
+- GMM은 k=2~6 및 covariance_type(spherical, diag, tied, full)을 함께 탐색하였다.
+- Feature 설명력은 one-way ANOVA F-통계량 및 eta-squared로 계산하였다.
+- 최종 해는 내부지표, 안정성, tiny cluster 여부를 함께 고려하여 선정하였다.

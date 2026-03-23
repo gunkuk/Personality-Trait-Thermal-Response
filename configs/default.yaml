@@ -1,0 +1,41 @@
+experiment_name: default
+
+run:
+  input_path: 00_data/02_processed/input_matrix_standardized.xlsx
+  out_base_dir: 03_outputs
+  sheet_name: null
+  random_state: 42
+  assume_already_standardized: true
+  save_pca_auxiliary: true
+
+model:
+  k_values: [2, 3, 4, 5, 6]
+  gmm_covariance_types: [spherical, diag, tied, full]
+
+analysis:
+  id_col_candidates: [id, ID, subject_id, subj_id]
+  seed_stability_runs: 30
+  subsample_stability_runs: 100
+  subsample_ratio: 0.8
+  tiny_cluster_threshold: 6
+  usable_min_cluster_size: 10
+  top_summary_n: 10
+  outlier_z_threshold: 2.5
+
+blocks:
+  PHY:
+    - hr_dtst_env_sd
+    - tonic_dtst_env_sd
+    - pulse_amplitude_dtst_env_sd
+    - skt_dtst_env_sd
+  PSY:
+    - tsv_20minus10_env_sd
+    - m2_20minus10_env_sd
+  BHR:
+    - p7_minus_m7_overall_mean
+    - p7_minus_m7_env_sd
+  TLX:
+    - tlx1_dtst_env_sd
+  EUP:
+    - eup5
+    - eup16

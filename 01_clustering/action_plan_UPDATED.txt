@@ -1,0 +1,25 @@
+<pipeline>
+
+subject-level clustering을 위한 pipeline은 다음과 같음
+
+1. load input data (엑셀파일)
+2. 헤더/condition/time 표준화
+3. trial-level 생리 feature extraction
+4. env-level(trial-level) -> subject-level meta feature aggregation
+5. SUR / post-survey subject summary 생성
+6. data cleaning
+   - 이상치/중복/고결측/near-zero variance/high-correlation 제거
+   - domain 지식상 peripheral feature 제거
+   - personality raw score / raw item 직접투입 제거
+*반드시 제거하는 이유 보고해야 함*
+7. standardization
+8. PCA (선택적 차원축소 및 시각화)
+9. input matrix 확정
+10. clustering
+   - K-means
+   - Ward
+   - GMM
+11. cluster profiling / interpretation
+12. discussion + future plans
+
+

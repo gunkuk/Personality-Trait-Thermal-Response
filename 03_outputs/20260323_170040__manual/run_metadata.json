@@ -1,0 +1,13 @@
+{
+  "run_timestamp": "2026-03-23T17:06:41",
+  "config_hash": "4f9a034bf5",
+  "python_version": "3.13.5",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "input_path": "C:\\Users\\rjs11\\Desktop\\1\\PAPER\\00_SCI\\MBTI\\00_data\\02_processed\\input_matrix_standardized.xlsx",
+  "out_dir": "C:\\Users\\rjs11\\Desktop\\1\\PAPER\\00_SCI\\MBTI\\03_outputs\\20260323_170040__manual",
+  "experiment_name": "manual",
+  "n_subjects": 128,
+  "n_features": 11,
+  "summary_n_rows": 30,
+  "summary_n_cols": 33
+}
