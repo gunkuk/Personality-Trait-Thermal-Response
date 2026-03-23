@@ -5,6 +5,7 @@ import argparse
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 '''
@@ -19,12 +20,15 @@ python run_pipeline.py --dataset_version v1 --data_structure full --skip_build
 
 블록 커스텀
 python build_dataset.py --dataset_version v2 --data_structure PHY,PSY,BHR
+python build_dataset.py --dataset_version v2 --data_structure no_tlx
+
+
 '''
 
 THIS_FILE = Path(__file__).resolve()
 ROOT = THIS_FILE.parent
 INPUT_MATRIX_DIR = ROOT / "00_data" / "modules" / "5. Input Matrix"   # 수정
-CLUSTERING_DIR   = ROOT / "01_model" / "6. Clustering (K-meas, Ward, GMM)"  # 수정
+CLUSTERING_DIR   = ROOT / "01_clustering" / "6. Clustering (K-meas, Ward, GMM)"  # 수정
 BUILD_SCRIPT     = INPUT_MATRIX_DIR / "build_dataset.py"
 CLUSTER_SCRIPT   = CLUSTERING_DIR / "run_clustering.py"
 PROCESSED_DIR    = ROOT / "00_data" / "02_processed"   # 수정
@@ -83,12 +87,47 @@ def main() -> None:
             f"Check dataset_version/data_structure/dataset_ext or disable --skip_build."
         )
 
+    # run_clustering.py uses --config YAML; build a minimal override config
+    default_config = ROOT / "configs" / "default.yaml"
+    config_lines = []
+    if default_config.exists():
+        config_lines = default_config.read_text(encoding="utf-8").splitlines()
+
+    # Replace / insert run.input_path and experiment_name
+    import re as _re
+    new_lines = []
+    in_run_block = False
+    input_path_written = False
+    for line in config_lines:
+        if _re.match(r"^run\s*:", line):
+            in_run_block = True
+            new_lines.append(line)
+            continue
+        if in_run_block and _re.match(r"^\S", line):
+            if not input_path_written:
+                new_lines.append(f"  input_path: {dataset_path}")
+                input_path_written = True
+            in_run_block = False
+        if in_run_block and _re.match(r"^\s+input_path\s*:", line):
+            new_lines.append(f"  input_path: {dataset_path}")
+            input_path_written = True
+            continue
+        new_lines.append(line)
+    if not input_path_written:
+        new_lines.append(f"  input_path: {dataset_path}")
+
+    # Set experiment_name
+    new_text = "\n".join(new_lines)
+    new_text = _re.sub(r"^experiment_name:.*", f"experiment_name: {args.experiment_name}", new_text, flags=_re.MULTILINE)
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False, encoding="utf-8") as tmp:
+        tmp.write(new_text)
+        tmp_config = tmp.name
+
     cluster_cmd = [
         sys.executable,
         str(CLUSTER_SCRIPT),
-        "--dataset_version", args.dataset_version,
-        "--data_structure", args.data_structure,
-        "--input_path", str(dataset_path),
+        "--config", tmp_config,
     ]
     if args.cluster_extra_args:
         cluster_cmd.extend(args.cluster_extra_args)

@@ -77,6 +77,8 @@ def find_id_col(df: pd.DataFrame, cfg: "AnalysisConfig") -> str | None:
 def load_input_dataframe(input_path: Path, sheet_name: Optional[str] = None) -> pd.DataFrame:
     if not input_path.exists():
         raise FileNotFoundError(f"[ERROR] Input file not found: {input_path}")
+    if input_path.suffix.lower() == ".csv":
+        return pd.read_csv(input_path)
     if sheet_name is None:
         return pd.read_excel(input_path)
     return pd.read_excel(input_path, sheet_name=sheet_name)
