@@ -314,6 +314,29 @@ def main():
     print(f"  shape    : {df.shape}")
     print(f"  features : {[c for c in df.columns if c != 'id']}")
 
+    try:
+        import os
+        import mlflow
+        mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", "mlruns"))
+        mlflow.set_experiment(os.environ.get("MLFLOW_EXPERIMENT_NAME", args.experiment_name))
+        parent_run_id = os.environ.get("MLFLOW_RUN_ID")
+        ctx = (
+            mlflow.start_run(run_id=parent_run_id, nested=True)
+            if parent_run_id
+            else mlflow.start_run()
+        )
+        with ctx:
+            mlflow.log_params({
+                "dataset_version": args.dataset_version,
+                "data_structure": args.data_structure,
+                "n_subjects": df.shape[0],
+                "n_features": df.shape[1] - 1,
+                "source_file": RAW_PATH.name,
+            })
+            mlflow.log_artifact(str(save_path))
+    except Exception as e:
+        print(f"[MLflow] logging skipped: {e}")
+
 
 if __name__ == "__main__":
     main()

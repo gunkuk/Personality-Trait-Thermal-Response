@@ -349,6 +349,96 @@ def write_sample_yaml_if_missing(sample_path: Path) -> None:
 
 
 # =========================================================
+# MLflow 결과 로깅
+# =========================================================
+
+def log_mlflow_results(
+    cfg: "RunConfig",
+    best: "pd.Series",
+    summary_df: "pd.DataFrame",
+    outlier_df: "pd.DataFrame",
+    feature_discrim_df: "pd.DataFrame",
+    n_subjects: int = 0,
+    n_features: int = 0,
+) -> None:
+    """
+    Run 종료 후 MLflow에 파라미터·메트릭·아티팩트 태그를 기록한다.
+    MLFLOW_RUN_ID 환경변수가 있으면 nested run으로 기록하고,
+    없으면 독립 run으로 기록한다.
+    MLflow 실패는 클러스터링 결과에 영향을 주지 않도록 try/except로 보호한다.
+    """
+    try:
+        import os as _os
+        import math
+        import mlflow
+
+        tracking_uri = _os.environ.get("MLFLOW_TRACKING_URI", "mlruns")
+        experiment_name = getattr(cfg, "experiment_name", "default")
+        parent_run_id = _os.environ.get("MLFLOW_RUN_ID")
+        data_structure = _os.environ.get("DATA_STRUCTURE", "")
+
+        mlflow.set_tracking_uri(tracking_uri)
+        mlflow.set_experiment(experiment_name)
+
+        def _safe_float(val):
+            try:
+                f = float(val)
+                if math.isnan(f) or math.isinf(f):
+                    return None
+                return f
+            except Exception:
+                return None
+
+        # Build params dict
+        params = {
+            "n_subjects": str(n_subjects) if n_subjects else None,
+            "n_features": str(n_features) if n_features else None,
+            "k_values": str(getattr(cfg, "k_values", "")),
+            "random_state": str(getattr(cfg, "random_state", "")),
+            "input_path": Path(cfg.input_path).stem if getattr(cfg, "input_path", None) else None,
+            "data_structure": data_structure or None,
+        }
+        # Remove None/empty values
+        params = {k: v for k, v in params.items() if v is not None and v != ""}
+
+        # Build metrics dict
+        metrics = {}
+        for col, key in [
+            ("silhouette", "best_silhouette"),
+            ("calinski_harabasz", "best_calinski_harabasz"),
+            ("davies_bouldin", "best_davies_bouldin"),
+            ("k", "best_k"),
+            ("subsample_stability_mean_ari", "best_subsample_ari"),
+            ("seed_stability_mean_ari", "best_seed_ari"),
+        ]:
+            if col in best.index:
+                val = _safe_float(best[col])
+                if val is not None:
+                    metrics[key] = val
+
+        n_flagged = int((outlier_df["is_outlier"] == True).sum()) if "is_outlier" in outlier_df.columns else 0
+        metrics["n_flagged_outliers"] = float(n_flagged)
+
+        # Context manager helper
+        if parent_run_id:
+            ctx = mlflow.start_run(run_id=parent_run_id, nested=True)
+        else:
+            ctx = mlflow.start_run(run_name=f"clustering__{experiment_name}")
+
+        with ctx:
+            if params:
+                mlflow.log_params(params)
+            if metrics:
+                mlflow.log_metrics(metrics)
+            mlflow.set_tag("output_dir", str(cfg.out_dir.resolve()))
+
+        print(f"[MLflow] Logged clustering results (experiment={experiment_name})")
+
+    except Exception as e:
+        print(f"[MLflow] logging skipped: {e}")
+
+
+# =========================================================
 # 메인
 # =========================================================
 
@@ -750,6 +840,15 @@ def main(cfg: RunConfig | None = None, resolved_config: dict | None = None) -> N
             "n_flagged_outliers": int((outlier_df["is_outlier"] == True).sum()),
             "n_tiny_cluster_rows": int(tiny_cluster_members_df.shape[0]),
         },
+    )
+
+    # =========================================================
+    # MLflow 로깅
+    # =========================================================
+    log_mlflow_results(
+        cfg, best, summary_df, outlier_df, feature_discrim_df,
+        n_subjects=int(X.shape[0]),
+        n_features=int(X.shape[1]),
     )
 
     # =========================================================

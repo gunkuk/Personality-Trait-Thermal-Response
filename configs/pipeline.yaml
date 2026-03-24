@@ -1,0 +1,26 @@
+defaults:
+  - _self_
+
+dataset_version: v1
+data_structure: full
+experiment_name: subject_level_pipeline
+tracking_uri: http://127.0.0.1:5000
+
+skip_build: false
+skip_clustering: false
+skip_posthoc: false
+
+use_existing_interim: false
+dataset_ext: csv
+
+posthoc_analysis_modes:
+  - ffm
+  - mbti_cont
+  - mbti_bin
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  output_subdir: null
