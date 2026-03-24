@@ -185,6 +185,69 @@ def get_all_label_sheets(summary_xlsx: Path) -> list[tuple[str, str]]:
     return []
 
 
+def _parse_label_key(label_key: str) -> tuple[str, int, str | None]:
+    """'kmeans_k3' → ('kmeans', 3, None), 'gmm_k2_spherical' → ('gmm', 2, 'spherical')"""
+    import re
+    m = re.match(r"^(kmeans|ward|gmm)_k(\d+)(?:_(.+))?$", label_key)
+    if m:
+        return m.group(1), int(m.group(2)), m.group(3) or None
+    return label_key, -1, None
+
+
+def filter_usable_label_sheets(
+    summary_xlsx: Path,
+    all_sheets: list[tuple[str, str]],
+) -> list[tuple[str, str]]:
+    """
+    summary_all 시트의 usable_candidate==True인 (model, k) 조합만 반환.
+    usable candidate가 하나도 없으면 경고 후 전체 반환.
+    """
+    try:
+        import pandas as pd
+        summary_df = pd.read_excel(summary_xlsx, sheet_name="summary_all")
+    except Exception:
+        return all_sheets
+
+    usable_keys: set[str] = set()
+    for _, row in summary_df.iterrows():
+        if not bool(row.get("usable_candidate", False)):
+            continue
+        model = row["model"]
+        k = int(row["k"])
+        cov = row.get("covariance_type", None)
+        import pandas as _pd
+        if _pd.isna(cov) if cov is not None else True:
+            usable_keys.add(f"{model}_k{k}")
+        else:
+            usable_keys.add(f"{model}_k{k}_{cov}")
+
+    filtered = [(s, key) for s, key in all_sheets if key in usable_keys]
+    if not filtered:
+        print(
+            f"[WARN] post-hoc threshold: usable_candidate 기준 통과 없음 — 전체 {len(all_sheets)}개로 fallback"
+        )
+        return all_sheets
+    print(
+        f"[INFO] post-hoc threshold: {len(all_sheets)}개 중 {len(filtered)}개 usable "
+        f"({', '.join(k for _, k in filtered)})"
+    )
+    return filtered
+
+
+def _find_txt_report(txt_dir: Path, label_key: str) -> Path:
+    """label_key에 대응하는 short report txt 파일 경로 반환 (없으면 새 경로)."""
+    model, k, cov = _parse_label_key(label_key)
+    cov_str = cov if cov else "None"
+    candidates = [
+        txt_dir / f"{model}_best_k{k}_cov_{cov_str}_short_report.txt",
+        txt_dir / f"best_{model}_k{k}_cov_{cov_str}_short_report.txt",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return txt_dir / f"{label_key}_posthoc_report.txt"
+
+
 @hydra.main(config_path="configs", config_name="pipeline", version_base=None)
 def main(cfg: DictConfig) -> None:
     # Convert OmegaConf to plain dict for easy access
@@ -272,19 +335,24 @@ def main(cfg: DictConfig) -> None:
         clustering_run_dir = find_latest_clustering_run(OUTPUTS_DIR, experiment_name)
         print(f"[INFO] clustering_run_dir = {clustering_run_dir}")
 
-        # 3) post-hoc — 모든 (model × k) 조합에 대해 실행
+        # 3) post-hoc — usable_candidate 기준 통과한 (model × k)만 실행
         if not skip_posthoc:
             cluster_input_path = find_cluster_assignment_input(clustering_run_dir)
 
             if cluster_input_path.name == "summary.xlsx":
-                label_sheets = get_all_label_sheets(cluster_input_path)
+                all_label_sheets = get_all_label_sheets(cluster_input_path)
+                label_sheets = filter_usable_label_sheets(cluster_input_path, all_label_sheets)
             else:
                 label_sheets = [(None, "best")]
 
             if not label_sheets:
                 print("[WARN] post-hoc: no label sheets found, skipping.")
             else:
-                print(f"[INFO] post-hoc: {len(label_sheets)} label sheet(s) found.")
+                sys.path.insert(0, str(CLUSTERING_DIR))
+                from clustering_analysis import append_posthoc_to_report  # noqa: E402
+
+                txt_dir = clustering_run_dir / "txt"
+                print(f"[INFO] post-hoc: {len(label_sheets)} usable solution(s) will be analysed.")
                 for sheet_name, label_key in label_sheets:
                     posthoc_out_dir = clustering_run_dir / "post_hoc" / label_key
 
@@ -303,6 +371,11 @@ def main(cfg: DictConfig) -> None:
 
                     print(f"[POST-HOC] {label_key}")
                     run_command(posthoc_cmd, env)
+
+                    # short report에 post-hoc 결과 append
+                    txt_path = _find_txt_report(txt_dir, label_key)
+                    append_posthoc_to_report(txt_path, posthoc_out_dir)
+                    print(f"[POST-HOC] appended to {txt_path.name}")
         else:
             print("[SKIP] PER_posthoc.py")
 

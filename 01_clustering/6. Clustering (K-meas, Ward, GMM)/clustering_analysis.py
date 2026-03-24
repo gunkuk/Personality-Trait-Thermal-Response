@@ -1055,3 +1055,43 @@ def write_total_summary_short_report(
     lines.append("- 낮은 설명력 feature는 해석 비중을 낮출 것")
 
     save_path.write_text("\n".join(lines), encoding="utf-8-sig")
+
+
+def append_posthoc_to_report(txt_path: Path, post_hoc_dir: Path) -> None:
+    """
+    post_hoc_dir 아래 {ffm,mbti_cont,mbti_bin}/summary.txt를 읽어
+    기존 short report 파일 뒤에 post-hoc 결과 섹션을 append한다.
+    txt_path가 없으면 새로 생성한다.
+    """
+    mode_labels = {
+        "ffm": "FFM (Big Five)",
+        "mbti_cont": "MBTI Continuous",
+        "mbti_bin": "MBTI Binary",
+    }
+    lines: list[str] = [
+        "",
+        "=" * 60,
+        "[POST-HOC PERSONALITY ANALYSIS]",
+        f"post_hoc_dir: {post_hoc_dir}",
+        "=" * 60,
+    ]
+    any_added = False
+    for mode, label in mode_labels.items():
+        summary_path = post_hoc_dir / mode / "summary.txt"
+        if not summary_path.exists():
+            continue
+        content = summary_path.read_text(encoding="utf-8-sig").strip()
+        lines.append(f"\n--- {label} ---")
+        lines.append(content)
+        any_added = True
+
+    if not any_added:
+        return
+
+    text_block = "\n".join(lines) + "\n"
+    if txt_path.exists():
+        with txt_path.open("a", encoding="utf-8-sig") as f:
+            f.write(text_block)
+    else:
+        txt_path.parent.mkdir(parents=True, exist_ok=True)
+        txt_path.write_text(text_block, encoding="utf-8-sig")
