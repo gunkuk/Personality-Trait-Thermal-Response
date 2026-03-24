@@ -242,7 +242,9 @@ def build_subject_dataset(data_structure: str = "full", use_existing_interim: bo
     if data_structure in SPECIAL_STRUCTURES:
         selected_blocks = {k: ALL_BLOCKS[k] for k in SPECIAL_STRUCTURES[data_structure]}
     else:
-        requested = [b.strip().upper() for b in data_structure.split(",")]
+        # "," "_" "+" 모두 구분자로 허용 (SPECIAL_STRUCTURES 체크 후이므로 no_tlx 등 충돌 없음)
+        import re as _re
+        requested = [b.strip().upper() for b in _re.split(r"[,_+]", data_structure)]
         selected_blocks = {k: ALL_BLOCKS[k] for k in requested if k in ALL_BLOCKS}
         if not selected_blocks:
             raise ValueError(f"No valid blocks in data_structure='{data_structure}'. Valid: {list(ALL_BLOCKS)}")

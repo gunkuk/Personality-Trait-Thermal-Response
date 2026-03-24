@@ -13,8 +13,16 @@ python run_pipeline.py dataset_version=v1 skip_posthoc=true
 python run_pipeline.py dataset_version=v1 data_structure=no_tlx
 
 # 멀티런 (자동으로 여러 번 실행)
-python run_pipeline.py -m dataset_version=v1 data_structure=full,no_tlx,PHY,PSY
+python run_pipeline.py -m dataset_version=v1 data_structure=PHY,PHY_PSY,PHY_BHR_PSY
 
+
+data_structure=full	PHY+PSY+BHR+TLX+EUP
+data_structure=no_tlx	PHY+PSY+BHR+EUP
+data_structure=PHY	PHY만
+data_structure=PHY_BHR	PHY+BHR
+data_structure=PHY_PSY_BHR	PHY+PSY+BHR
+
+ ㅡ
 # MLflow UI
 mlflow ui  # 브라우저에서 http://localhost:5000
 '''
@@ -155,6 +163,28 @@ def find_cluster_assignment_input(run_dir: Path) -> Path:
     )
 
 
+def get_all_label_sheets(summary_xlsx: Path) -> list[tuple[str, str]]:
+    """
+    summary.xlsx 안의 'lbl__' 접두사 시트를 찾아 (sheet_name, label_key) 리스트 반환.
+    없으면 best_labels 시트 하나만 반환.
+    """
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(summary_xlsx, read_only=True, data_only=True)
+        sheets = wb.sheetnames
+        wb.close()
+    except Exception:
+        return [("best_labels", "best")]
+
+    lbl_sheets = [(s, s[len("lbl__"):]) for s in sheets if s.startswith("lbl__")]
+    if lbl_sheets:
+        return lbl_sheets
+    # 구버전 호환 — lbl__ 시트 없으면 best_labels 하나만
+    if "best_labels" in sheets:
+        return [("best_labels", "best")]
+    return []
+
+
 @hydra.main(config_path="configs", config_name="pipeline", version_base=None)
 def main(cfg: DictConfig) -> None:
     # Convert OmegaConf to plain dict for easy access
@@ -242,26 +272,37 @@ def main(cfg: DictConfig) -> None:
         clustering_run_dir = find_latest_clustering_run(OUTPUTS_DIR, experiment_name)
         print(f"[INFO] clustering_run_dir = {clustering_run_dir}")
 
-        # 3) post-hoc
+        # 3) post-hoc — 모든 (model × k) 조합에 대해 실행
         if not skip_posthoc:
             cluster_input_path = find_cluster_assignment_input(clustering_run_dir)
-            posthoc_out_dir = clustering_run_dir / "post_hoc"
 
-            posthoc_cmd = [
-                sys.executable,
-                str(POSTHOC_SCRIPT),
-                "--cluster_path", str(cluster_input_path),
-                "--personality_xlsx_path", str(Path(personality_xlsx_path)),
-                "--out_dir", str(posthoc_out_dir),
-                "--analysis_modes",
-                *posthoc_analysis_modes,
-            ]
-
-            # summary.xlsx는 여러 시트를 가지고 있으므로 best_labels 시트를 명시
             if cluster_input_path.name == "summary.xlsx":
-                posthoc_cmd += ["--cluster_sheet", "best_labels"]
+                label_sheets = get_all_label_sheets(cluster_input_path)
+            else:
+                label_sheets = [(None, "best")]
 
-            run_command(posthoc_cmd, env)
+            if not label_sheets:
+                print("[WARN] post-hoc: no label sheets found, skipping.")
+            else:
+                print(f"[INFO] post-hoc: {len(label_sheets)} label sheet(s) found.")
+                for sheet_name, label_key in label_sheets:
+                    posthoc_out_dir = clustering_run_dir / "post_hoc" / label_key
+
+                    posthoc_cmd = [
+                        sys.executable,
+                        str(POSTHOC_SCRIPT),
+                        "--cluster_path", str(cluster_input_path),
+                        "--personality_xlsx_path", str(Path(personality_xlsx_path)),
+                        "--out_dir", str(posthoc_out_dir),
+                        "--analysis_modes",
+                        *posthoc_analysis_modes,
+                    ]
+
+                    if sheet_name is not None:
+                        posthoc_cmd += ["--cluster_sheet", sheet_name]
+
+                    print(f"[POST-HOC] {label_key}")
+                    run_command(posthoc_cmd, env)
         else:
             print("[SKIP] PER_posthoc.py")
 

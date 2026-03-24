@@ -571,6 +571,8 @@ def main(cfg: RunConfig | None = None, resolved_config: dict | None = None) -> N
     # --- 모델별 best 결과 수집 + tiny cluster ---
     model_best_rows: List[pd.Series] = []
     model_best_label_dfs: Dict[str, pd.DataFrame] = {}
+    # 모든 (model × k) 조합 라벨 — post-hoc 전체 실행용
+    all_label_dfs: Dict[str, pd.DataFrame] = {}
     tiny_cluster_members_all: List[pd.DataFrame] = []
 
     for model_name in ["kmeans", "ward", "gmm"]:
@@ -601,6 +603,48 @@ def main(cfg: RunConfig | None = None, resolved_config: dict | None = None) -> N
         tiny_df = extract_tiny_cluster_members(tmp_df, model_name, mk, mcov, cfg.analysis)
         if not tiny_df.empty:
             tiny_cluster_members_all.append(tiny_df)
+
+    # 모든 k 값에 대해 라벨 저장 (kmeans/ward: cov 없음, gmm: 해당 k의 best cov)
+    for model_name in ["kmeans", "ward"]:
+        for k_val in cfg.k_values:
+            r = next(
+                (r for r in all_results if r.model_name == model_name and r.k == k_val),
+                None,
+            )
+            if r is None:
+                continue
+            sheet_key = f"{model_name}_k{k_val}"
+            all_label_dfs[sheet_key] = build_labeled_df(
+                X_df, r.labels, id_col=id_col, ids=ids
+            )
+
+    for k_val in cfg.k_values:
+        sub_gmm_k = summary_df[
+            (summary_df["model"] == "gmm") & (summary_df["k"] == k_val)
+        ]
+        if sub_gmm_k.empty:
+            continue
+        best_gmm_row = sub_gmm_k.iloc[0]
+        mcov_k = (
+            best_gmm_row["covariance_type"]
+            if pd.notna(best_gmm_row["covariance_type"])
+            else None
+        )
+        r = next(
+            (
+                r
+                for r in all_results
+                if r.model_name == "gmm" and r.k == k_val and r.covariance_type == mcov_k
+            ),
+            None,
+        )
+        if r is None:
+            continue
+        cov_tag = mcov_k if mcov_k else "None"
+        sheet_key = f"gmm_k{k_val}_{cov_tag}"
+        all_label_dfs[sheet_key] = build_labeled_df(
+            X_df, r.labels, id_col=id_col, ids=ids
+        )
 
     best_tiny_df = extract_tiny_cluster_members(
         labeled_df, best_model, best_k, best_cov, cfg.analysis
@@ -824,8 +868,10 @@ def main(cfg: RunConfig | None = None, resolved_config: dict | None = None) -> N
         if pca_df is not None:
             pca_df.to_excel(writer, sheet_name="best_pca_aux", index=False)
 
-        for key, tmp_df in model_best_label_dfs.items():
-            tmp_df.to_excel(writer, sheet_name=key[:31], index=False)
+        # 전체 (model × k) 조합 라벨 시트 — 시트명 접두사 "lbl__" 로 식별
+        for key, tmp_df in all_label_dfs.items():
+            sheet_name_safe = ("lbl__" + key)[:31]
+            tmp_df.to_excel(writer, sheet_name=sheet_name_safe, index=False)
 
     # metadata 갱신
     save_run_artifacts(

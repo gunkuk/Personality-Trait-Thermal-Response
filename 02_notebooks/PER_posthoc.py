@@ -393,7 +393,9 @@ def games_howell(groups: Dict[str, np.ndarray], trait_name: str) -> pd.DataFrame
             if HAS_QSTURNG:
                 # Games-Howell은 studentized range 기반
                 q_stat = abs(mean_diff) / math.sqrt(0.5 * se2)
-                p_val = float(psturng(q_stat, k, df))
+                _p = psturng(q_stat, k, df)
+                # psturng이 배열을 반환하는 경우 대응
+                p_val = float(np.asarray(_p).flat[0])
             else:
                 # fallback: Welch t 근사
                 p_val = float(2 * (1 - stats.t.cdf(t_stat, df)))
