@@ -1,0 +1,14 @@
+artifact_uri: file:C:/Users/rjs11/Desktop/1/PAPER/00_SCI/MBTI/mlruns/187919508491163465/298d3ce5e78e4e91b23406a717224cd4/artifacts
+end_time: 1774272215053
+entry_point_name: ''
+experiment_id: '187919508491163465'
+lifecycle_stage: active
+run_id: 298d3ce5e78e4e91b23406a717224cd4
+run_name: pipeline__v1__full
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1774271850788
+status: 3
+tags: []
+user_id: gunk

@@ -1,5 +1,8 @@
 REF/
 피험자모집/
+ETC/
+03_outputs/
+00_data/
 
 # Large BIOPAC raw output files (>100MB, exceed GitHub limit)
 **/preprocessing/out/*.txt
