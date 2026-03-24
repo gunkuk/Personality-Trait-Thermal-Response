@@ -36,7 +36,7 @@ ROOT = THIS_FILE.parent
 
 INPUT_MATRIX_DIR = ROOT / "00_data" / "modules" / "5. Input Matrix"
 CLUSTERING_DIR = ROOT / "01_clustering" / "6. Clustering (K-meas, Ward, GMM)"
-POSTHOC_DIR = ROOT / "02_post_hoc"
+POSTHOC_DIR = ROOT / "02_notebooks"
 
 BUILD_SCRIPT = INPUT_MATRIX_DIR / "build_dataset.py"
 CLUSTER_SCRIPT = CLUSTERING_DIR / "run_clustering.py"
@@ -256,6 +256,10 @@ def main(cfg: DictConfig) -> None:
                 "--analysis_modes",
                 *posthoc_analysis_modes,
             ]
+
+            # summary.xlsx는 여러 시트를 가지고 있으므로 best_labels 시트를 명시
+            if cluster_input_path.name == "summary.xlsx":
+                posthoc_cmd += ["--cluster_sheet", "best_labels"]
 
             run_command(posthoc_cmd, env)
         else:

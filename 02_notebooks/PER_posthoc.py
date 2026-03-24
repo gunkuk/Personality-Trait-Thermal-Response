@@ -53,6 +53,12 @@ def parse_args():
 
     parser.add_argument("--cluster_id_col", type=str, default="id")
     parser.add_argument("--cluster_label_col", type=str, default="cluster")
+    parser.add_argument(
+        "--cluster_sheet",
+        type=str,
+        default=None,
+        help="xlsx 파일에서 읽을 시트명 (None이면 첫 번째 시트)",
+    )
 
     parser.add_argument("--personality_sheet", type=str, default="BI")
     parser.add_argument("--personality_id_col", type=str, default="id")
@@ -117,11 +123,16 @@ def safe_numeric(df: pd.DataFrame, cols: List[str]) -> pd.DataFrame:
     return out
 
 
-def load_cluster_df(cluster_path: Path, id_col: str, cluster_col: str) -> pd.DataFrame:
+def load_cluster_df(
+    cluster_path: Path,
+    id_col: str,
+    cluster_col: str,
+    sheet_name=None,
+) -> pd.DataFrame:
     if cluster_path.suffix.lower() == ".csv":
         df = pd.read_csv(cluster_path)
     elif cluster_path.suffix.lower() in [".xlsx", ".xls"]:
-        df = pd.read_excel(cluster_path)
+        df = pd.read_excel(cluster_path, sheet_name=sheet_name)
     else:
         raise ValueError(f"Unsupported cluster file type: {cluster_path.suffix}")
 
@@ -141,9 +152,11 @@ def load_cluster_df(cluster_path: Path, id_col: str, cluster_col: str) -> pd.Dat
 def load_personality_df(xlsx_path: Path, sheet_name: str, id_col: str) -> pd.DataFrame:
     df = pd.read_excel(xlsx_path, sheet_name=sheet_name, header=1)
 
-    # 대소문자/공백 최소 대응
-    col_map = {c: str(c).strip() for c in df.columns}
+    # 대소문자/공백 정규화 (strip + lowercase)
+    col_map = {c: str(c).strip().lower() for c in df.columns}
     df = df.rename(columns=col_map)
+    # id_col도 소문자로 맞춤
+    id_col = id_col.strip().lower()
 
     if id_col not in df.columns:
         # fallback: 흔한 id 컬럼명 탐색
@@ -760,6 +773,7 @@ def main():
         cluster_path=cluster_path,
         id_col=args.cluster_id_col,
         cluster_col=args.cluster_label_col,
+        sheet_name=args.cluster_sheet,
     )
 
     personality_df = load_personality_df(
