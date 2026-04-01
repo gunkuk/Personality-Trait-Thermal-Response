@@ -4,7 +4,7 @@ defaults:
 dataset_version: v1
 data_structure: full
 experiment_name: subject_level_pipeline
-tracking_uri: http://127.0.0.1:5000
+tracking_uri: sqlite:///mlflow.db
 
 skip_build: false
 skip_clustering: false

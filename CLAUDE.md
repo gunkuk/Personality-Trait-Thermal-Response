@@ -30,7 +30,7 @@ Three sequential stages, each as a separate subprocess:
 
 2. **`01_clustering/6. Clustering (K-meas, Ward, GMM)/run_clustering.py`** — reads the processed CSV via `configs/default.yaml` (overridden by a temp config), runs KMeans/Ward/GMM for k=2~6, writes results to `03_outputs/<timestamp>__<experiment_name>/`
 
-3. **`02_post_hoc/PER_posthoc.py`** — reads cluster assignments + personality xlsx, runs FFM/MBTI continuous/MBTI binary analyses, writes into `<clustering_run_dir>/post_hoc/`
+3. **`02_notebooks/PER_posthoc.py`** — reads cluster assignments + personality xlsx, runs FFM/MBTI continuous/MBTI binary analyses, writes into `<clustering_run_dir>/post_hoc/`
 
 `run_pipeline.py` is the orchestrator. It uses **Hydra** (`configs/pipeline.yaml`) for config and starts an **MLflow** parent run that wraps all three stages.
 
@@ -52,7 +52,14 @@ Defined identically in `build_dataset.py` and `default.yaml`:
 
 ## MLflow Tracking
 
-`tracking_uri` defaults to `http://127.0.0.1:5000` — requires `mlflow ui` running in the background. For local file-based tracking without a server, change to `sqlite:///mlflow.db` in `configs/pipeline.yaml`.
+`tracking_uri` defaults to `sqlite:///mlflow.db` (local file, no server needed). To use the MLflow UI, run `mlflow ui` separately and change `tracking_uri` to `http://127.0.0.1:5000` in `configs/pipeline.yaml`.
+
+## Working with Claude Code
+
+**Test runs and commits are handled by the user, not Claude.**
+- When debugging is needed, the user runs commands and pastes output back to Claude.
+- Claude should describe what to run and what output to look for, then wait.
+- Claude should not execute `run_pipeline.py` or long-running processes itself.
 
 ## Output Structure
 

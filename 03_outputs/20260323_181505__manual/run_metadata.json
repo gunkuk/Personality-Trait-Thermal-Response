@@ -1,9 +1,0 @@
-{
-  "run_timestamp": "2026-03-23T18:15:05",
-  "config_hash": "f1817890b4",
-  "python_version": "3.13.5",
-  "platform": "Windows-11-10.0.26200-SP0",
-  "input_path": "C:\\Users\\rjs11\\Desktop\\1\\PAPER\\00_SCI\\MBTI\\00_data\\02_processed\\input_matrix_standardized.xlsx",
-  "out_dir": "C:\\Users\\rjs11\\Desktop\\1\\PAPER\\00_SCI\\MBTI\\03_outputs\\20260323_181505__manual",
-  "experiment_name": "manual"
-}
